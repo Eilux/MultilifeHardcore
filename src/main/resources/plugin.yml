@@ -1,0 +1,8 @@
+name: HardcoreMultiLife
+version: ${project.version}
+main: dev.bodner.jack.hardcore.HardcoreMultiLife
+api-version: 1.16
+prefix: MultiLife
+load: STARTUP
+authors: [ Eilux ]
+description: Allows multiple lives in hardcore along with some other special settings and features.
