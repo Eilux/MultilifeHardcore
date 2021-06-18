@@ -1,8 +1,34 @@
-name: HardcoreMultiLife
+name: AdvancedHardcore
 version: ${project.version}
-main: dev.bodner.jack.hardcore.HardcoreMultiLife
+main: dev.bodner.jack.hardcore.AdvancedHardcore
 api-version: 1.16
-prefix: MultiLife
-load: STARTUP
-authors: [ Eilux ]
+prefix: AdvancedHardcore
+load: POSTWORLD
+authors: [Eilux]
 description: Allows multiple lives in hardcore along with some other special settings and features.
+softdepend: [CustomDimensions]
+permissions:
+  hml.*:
+    description: Universal permission for Advanced Hardcore
+    children:
+      hml.lives: true
+      hml.res: true
+
+  hml.lives:
+    description: Allows modification of number of lives
+    default: op
+
+  hml.res:
+    description: Allows resurection of other players (consumes required materials)
+    default: true
+
+commands:
+    lives:
+      description: Changes the amount of lives a player has
+      usage: /<command> add\remove\set <number> <player>
+      permission: hml.lives
+
+    resurrect:
+      description: Resurects a player at your current location at the cost of some items and health
+      usage: /<command> <player>
+      permission: hml.res

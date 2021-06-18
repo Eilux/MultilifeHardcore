@@ -1,0 +1,39 @@
+# The number of lives given to a player upon joining the server for the first time, must be a positive whole number.
+lives: 3
+
+# What happens when a player dies, values can be: "spectate", "ban", or "teleport"
+mode: "spectate"
+
+# Only used if mode is set to "teleport", determines what world the player will be teleported to. This plugin depends on CustomDimensions so that data packs can be used to supply the world.
+# The world name is the same as that of the different world folders e.g. "world" or "world_nether" however custom worlds from data packs are named differently e.g. the ID "namespace:customdim" has the name: "customdim"
+teleportWorld: "world"
+
+# Only used if mode is set to "teleport", the coordinates of the teleport location
+teleportCoordinates:
+  - "0.0" # X
+  - "0.0" # Y
+  - "0.0" # Z
+  - "0.0" # Pitch
+  - "0.0" # Yaw
+
+# With this enabled PvP will be disabled unless one of the combatants is at one life
+oneLifePvP: false
+
+# If enabled, players are able to resurrect each other at the cost of some items and a permanent health reduction, those who are resurrected may also have a health reduction
+resurrection: true
+
+# Only used if resurrection is enabled, lets you specify what items and how much of them resurrection costs, follows the format shown below of the item name (without the namespace) in all caps followed by a positive integer specifying the amount
+resItemCost:
+  - DIAMOND: 4
+  #- EMERALD: 3
+    # etc.
+
+# Only used if resurrection is enabled, lets you specify how much health resurrection costs values must be positive integers (values 20 or greater will result in the players death)
+resHealthCost: 2
+
+# Only used if resurrection is enabled, lets you specify a minimum amount of health a resurrecting player must be left with after the fact, can be disabled by setting it to 0 or lower in which case a player can resurrect until it kills them
+resHealthMin: 6
+
+# The max health of someone who is resurrected, must be a positive integer, should be less than 20 for balance
+resHealth: 10
+
