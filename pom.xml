@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>dev.bodner.jack</groupId>
-    <artifactId>hardcore-multilife</artifactId>
+    <artifactId>advanced-hardcore</artifactId>
     <version>1.0-ALPHA</version>
     <packaging>jar</packaging>
 
-    <name>Hardcore MultiLife</name>
+    <name>Advanced Hardcore</name>
 
     <description>Allows multiple lives in hardcore along with some other special settings and features.</description>
     <properties>
@@ -68,7 +68,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.16.5-R0.1-SNAPSHOT</version>
+            <version>1.17-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

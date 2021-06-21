@@ -1,7 +1,7 @@
 name: AdvancedHardcore
 version: ${project.version}
 main: dev.bodner.jack.hardcore.AdvancedHardcore
-api-version: 1.16
+api-version: 1.17
 prefix: AdvancedHardcore
 load: POSTWORLD
 authors: [Eilux]

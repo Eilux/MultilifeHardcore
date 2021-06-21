@@ -6,9 +6,11 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import dev.bodner.jack.hardcore.command.Lives;
+import dev.bodner.jack.hardcore.command.Resurrect;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -36,6 +38,7 @@ public final class AdvancedHardcore extends JavaPlugin implements Listener {
     final String DATA_PATH = getDataFolder().getAbsolutePath() + File.separator + "data";
     Logger logger = Bukkit.getLogger();
     Type type = new TypeToken<Map<UUID, Integer>>(){}.getType();
+    Type type2 = new TypeToken<ArrayList<UUID>>(){}.getType();
 
     Objective objective;
     Team green;
@@ -45,19 +48,22 @@ public final class AdvancedHardcore extends JavaPlugin implements Listener {
     Team dead;
 
     private HashMap<UUID, Integer> playerLives = new HashMap<>();
+    ArrayList<UUID> healthList = new ArrayList<>();
 
     int initialLives;
     DeathMode deathMode;
     Location location;
     boolean pvpOnLife1;
-    boolean resurrection;
-    ArrayList<ItemStack> resCost = new ArrayList<>();
-    int resHealthCost;
-    int resHealthMin;
-    int resHealth;
+
+    private boolean resurrection;
+    private ArrayList<ItemStack> resCost = new ArrayList<>();
+    private int resHealthCost;
+    private int resHealthMin;
+    private int resHealth;
 
     File dataPathFile = new File(DATA_PATH);
     File lifeCounter = new File(DATA_PATH + File.separator + "lives.json");
+    File healthToSet = new File(DATA_PATH + File.separator + "healthToSet.json");
 
     @Override
     public void onEnable() {
@@ -144,6 +150,16 @@ public final class AdvancedHardcore extends JavaPlugin implements Listener {
                 writer.close();
                 logger.info("lives.json successfully created.");
             }
+
+            if (!healthToSet.exists()){
+                logger.info("healthToSet.json does not exist, creating...");
+                healthToSet.createNewFile();
+                BufferedWriter writer = new BufferedWriter(new FileWriter(healthToSet));
+                writer.write(gson.toJson(healthList, type2));
+                writer.close();
+                logger.info("healthToSet.json successfully created.");
+            }
+
             try{
                 FileInputStream stream = new FileInputStream(lifeCounter);
                 JsonObject jsonObject = (JsonObject)parser.parse(new InputStreamReader(stream));
@@ -194,16 +210,39 @@ public final class AdvancedHardcore extends JavaPlugin implements Listener {
                     player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(color.toString() + k + " Lives"));
                 }
             });
+
+            Iterator<UUID> iterator = healthList.iterator();
+            while (iterator.hasNext()){
+                UUID id = iterator.next();
+
+                Player player = Bukkit.getPlayer(id);
+                if (player != null){
+                    player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(resHealth);
+                    iterator.remove();
+                }
+
+            }
+//
+//            healthList.forEach((v) -> {
+//                Player player = Bukkit.getPlayer(v);
+//                if (player != null){
+//                    player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(resHealth);
+//                    healthList.remove(v);
+//                }
+//            });
+
+
         }, 0, 1);
 
         this.getCommand("lives").setExecutor(new Lives());
+        this.getCommand("resurrect").setExecutor(new Resurrect());
     }
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         UUID id = event.getPlayer().getUniqueId();
         if (!playerLives.containsKey(id)){
-            playerLives.replace(id,initialLives);
+            playerLives.put(id,initialLives);
         }
     }
 
@@ -215,6 +254,7 @@ public final class AdvancedHardcore extends JavaPlugin implements Listener {
         }
         if (deathMode.equals(DeathMode.BAN) && playerLives.get(id) <= 0){
             Bukkit.getBanList(BanList.Type.NAME).addBan(event.getEntity().getName(),"§fGame Over.",null,null);
+            event.getEntity().spigot().respawn();
             new KickPlayer(event.getEntity()).runTaskLater(this, 1);
         }
         if (deathMode.equals(DeathMode.SPECTATE) && playerLives.get(id) <= 0){
@@ -224,10 +264,15 @@ public final class AdvancedHardcore extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onPlayerRespawn(PlayerRespawnEvent event){
+        if (event.getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() < 20){
+            event.getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(20);
+        }
+
         UUID id = event.getPlayer().getUniqueId();
         if (deathMode.equals(DeathMode.TELEPORT) && playerLives.get(id) <= 0){
             event.setRespawnLocation(location);
         }
+
     }
 
 
@@ -244,6 +289,14 @@ public final class AdvancedHardcore extends JavaPlugin implements Listener {
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(lifeCounter));
             writer.write(gson.toJson(playerLives, type));
+            writer.close();
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(healthToSet));
+            writer.write(gson.toJson(healthList, type2));
             writer.close();
         }
         catch (Exception e){
@@ -340,21 +393,24 @@ public final class AdvancedHardcore extends JavaPlugin implements Listener {
 
     public boolean resurrect(UUID uuid){
         Player player = Bukkit.getPlayer(uuid);
+        Location location = null;
 
         if (player != null){
-            Location location = player.getBedSpawnLocation();
+            location = player.getBedSpawnLocation();
             if (location == null){
                 location = Bukkit.getWorlds().get(0).getSpawnLocation();
             }
         }
+
+        logger.info(location.toString());
 
         switch (deathMode){
             case SPECTATE:
                 if (player == null){
                     return false;
                 }
-                player.teleport(location);
                 player.setGameMode(GameMode.SURVIVAL);
+                player.teleport(location);
                 return true;
             case TELEPORT:
                 if (player == null){
@@ -373,12 +429,13 @@ public final class AdvancedHardcore extends JavaPlugin implements Listener {
 
     public boolean resurrect(UUID uuid, Location location){
         Player player = Bukkit.getPlayer(uuid);
-
+        playerLives.replace(uuid,1);
         switch (deathMode){
             case SPECTATE:
                 if (player == null){
                     return false;
                 }
+                player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(resHealth);
                 player.teleport(location);
                 player.setGameMode(GameMode.SURVIVAL);
                 return true;
@@ -386,9 +443,11 @@ public final class AdvancedHardcore extends JavaPlugin implements Listener {
                 if (player == null){
                     return false;
                 }
+                player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(resHealth);
                 player.teleport(location);
                 return true;
             case BAN:
+                healthList.add(uuid);
                 OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(uuid);
                 Bukkit.getBanList(BanList.Type.NAME).pardon(offlinePlayer.getName());
                 return true;
@@ -400,6 +459,30 @@ public final class AdvancedHardcore extends JavaPlugin implements Listener {
 
     public HashMap<UUID, Integer> getPlayerLives() {
         return playerLives;
+    }
+
+    public ArrayList<ItemStack> getResCost() {
+        return resCost;
+    }
+
+    public boolean isResurrection() {
+        return resurrection;
+    }
+
+    public int getResHealth() {
+        return resHealth;
+    }
+
+    public int getResHealthCost() {
+        return resHealthCost;
+    }
+
+    public int getResHealthMin() {
+        return resHealthMin;
+    }
+
+    public ArrayList<UUID> getHealthList() {
+        return healthList;
     }
 }
 
