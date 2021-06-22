@@ -5,6 +5,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -39,35 +41,6 @@ public final class Util {
         return id;
     }
 
-    //From here: https://bukkit.org/threads/solved-player-direction.72789/
-    public static String getCardinalDirection(Player player) {
-        double rotation = (player.getLocation().getYaw() - 90) % 360;
-        if (rotation < 0) {
-            rotation += 360.0;
-        }
-        if (0 <= rotation && rotation < 22.5) {
-            return "N";
-        } else if (22.5 <= rotation && rotation < 67.5) {
-            return "NE";
-        } else if (67.5 <= rotation && rotation < 112.5) {
-            return "E";
-        } else if (112.5 <= rotation && rotation < 157.5) {
-            return "SE";
-        } else if (157.5 <= rotation && rotation < 202.5) {
-            return "S";
-        } else if (202.5 <= rotation && rotation < 247.5) {
-            return "SW";
-        } else if (247.5 <= rotation && rotation < 292.5) {
-            return "W";
-        } else if (292.5 <= rotation && rotation < 337.5) {
-            return "NW";
-        } else if (337.5 <= rotation && rotation < 360.0) {
-            return "N";
-        } else {
-            return null;
-        }
-    }
-
     //Adapted from here: https://www.spigotmc.org/threads/remove-a-specific-amount-of-items-from-a-chest.388457/
     public static void removeItems(Inventory inventory, ItemStack item, int toRemove) {
         if (inventory == null || item == null || toRemove < 0){
@@ -87,6 +60,16 @@ public final class Util {
             }
             inventory.clear(i);
             toRemove -= loopItem.getAmount();
+        }
+    }
+
+    public static void DrawParticleCircle(Location location, double radius, Particle particle){
+        for (int i = 0; i < 360; i++){
+            Location newLocation = new Location(location.getWorld(), location.getX(), location.getY(), location.getZ());
+            double x = Math.cos(Math.toRadians(i)) * radius;
+            double y = Math.sin(Math.toRadians(i)) * radius;
+            newLocation.add(x, 0, y);
+            location.getWorld().spawnParticle(particle, newLocation, 0, 0, 0, 0, 0.1);
         }
     }
 

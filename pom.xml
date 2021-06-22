@@ -6,7 +6,7 @@
 
     <groupId>dev.bodner.jack</groupId>
     <artifactId>advanced-hardcore</artifactId>
-    <version>1.0-ALPHA</version>
+    <version>1.0</version>
     <packaging>jar</packaging>
 
     <name>Advanced Hardcore</name>

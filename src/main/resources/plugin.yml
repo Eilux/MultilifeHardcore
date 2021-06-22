@@ -32,3 +32,8 @@ commands:
       description: Resurects a player at your current location at the cost of some items and health
       usage: /<command> <player>
       permission: hml.res
+
+    rescost:
+      description: Tells the user the cost of resurecting another player
+      usage: /<command>
+      permission: hml.res

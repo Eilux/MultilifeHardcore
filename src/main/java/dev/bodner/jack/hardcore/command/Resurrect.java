@@ -4,6 +4,8 @@ import dev.bodner.jack.hardcore.AdvancedHardcore;
 import dev.bodner.jack.hardcore.Util;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -54,37 +56,24 @@ public class Resurrect implements CommandExecutor {
 
             if (hasItems.get() && hasHealth.get()){
                 Location location = player.getLocation();
-                String dir = Util.getCardinalDirection(player);
-                switch (dir){
-                    case "N":
-                        location.setZ(location.getZ() - 1);
-                        break;
-                    case "NE":
-                        location.setZ(location.getZ() - 0.5);
-                        location.setX(location.getX() + 0.5);
-                        break;
-                    case "E":
-                        location.setX(location.getX() + 1);
-                        break;
-                    case "SE":
-                        location.setZ(location.getZ() + 0.5);
-                        location.setX(location.getX() + 0.5);
-                        break;
-                    case "S":
-                        location.setZ(location.getZ() + 1);
-                        break;
-                    case "SW":
-                        location.setZ(location.getZ() + 0.5);
-                        location.setX(location.getX() - 0.5);
-                        break;
-                    case "W":
-                        location.setX(location.getX() - 1);
-                        break;
-                    case "NW":
-                        location.setZ(location.getZ() - 0.5);
-                        location.setX(location.getX() - 0.5);
-                        break;
+
+                double rotation = (player.getLocation().getYaw() - 90) % 360;
+                if (rotation < 0) {
+                    rotation += 360.0;
                 }
+
+                double x = Math.cos(Math.toRadians(rotation)) * 2.5;
+                double z = Math.sin(Math.toRadians(rotation)) * 2.5;
+
+                location.add(-x, 0, -z);
+                location.setYaw((((float)(rotation + 90)) + 180F) % 360);
+
+                Util.DrawParticleCircle(location, 2, Particle.PORTAL);
+                Util.DrawParticleCircle(location, 1, Particle.PORTAL);
+                Util.DrawParticleCircle(location, 0.5, Particle.PORTAL);
+
+                location.getWorld().playSound(location, Sound.ENTITY_ELDER_GUARDIAN_CURSE, 20, 1.2F);
+
                 plugin.getResCost().forEach((v) -> {
                     Util.removeItems(player.getInventory(), v, v.getAmount());
                 });

@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import dev.bodner.jack.hardcore.command.Lives;
+import dev.bodner.jack.hardcore.command.ResCost;
 import dev.bodner.jack.hardcore.command.Resurrect;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -220,22 +221,12 @@ public final class AdvancedHardcore extends JavaPlugin implements Listener {
                     player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(resHealth);
                     iterator.remove();
                 }
-
             }
-//
-//            healthList.forEach((v) -> {
-//                Player player = Bukkit.getPlayer(v);
-//                if (player != null){
-//                    player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(resHealth);
-//                    healthList.remove(v);
-//                }
-//            });
-
-
         }, 0, 1);
 
         this.getCommand("lives").setExecutor(new Lives());
         this.getCommand("resurrect").setExecutor(new Resurrect());
+        this.getCommand("rescost").setExecutor(new ResCost());
     }
 
     @EventHandler
