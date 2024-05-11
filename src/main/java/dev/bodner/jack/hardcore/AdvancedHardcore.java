@@ -208,7 +208,7 @@ public final class AdvancedHardcore extends JavaPlugin implements Listener {
                             color = ChatColor.GRAY;
                         }
                     }
-                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(color.toString() + k + " Lives"));
+//                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(color.toString() + k + " Lives"));
                 }
             });
 

@@ -24,7 +24,9 @@ public class Resurrect implements CommandExecutor {
         UUID uuid;
         AtomicBoolean hasItems = new AtomicBoolean(true);
         AtomicBoolean hasHealth = new AtomicBoolean(true);
-
+        if (args.length != 1) {
+            return false;
+        }
         if (sender.hasPermission("hml.res") && sender instanceof Player){
             if (!plugin.isResurrection()){
                 sender.sendMessage("§cResurrection must be enabled on this server");
