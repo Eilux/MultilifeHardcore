@@ -1,7 +1,7 @@
 name: AdvancedHardcore
 version: ${project.version}
 main: dev.bodner.jack.hardcore.AdvancedHardcore
-api-version: 1.17
+api-version: 1.20
 prefix: AdvancedHardcore
 load: POSTWORLD
 authors: [Eilux]
@@ -19,7 +19,7 @@ permissions:
     default: op
 
   hml.res:
-    description: Allows resurection of other players (consumes required materials)
+    description: Allows resurrection of other players (consumes required materials)
     default: true
 
 commands:

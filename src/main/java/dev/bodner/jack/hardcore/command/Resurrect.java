@@ -24,6 +24,8 @@ public class Resurrect implements CommandExecutor {
         UUID uuid;
         AtomicBoolean hasItems = new AtomicBoolean(true);
         AtomicBoolean hasHealth = new AtomicBoolean(true);
+        AtomicBoolean hasLives = new AtomicBoolean(true);
+
         if (args.length != 1) {
             return false;
         }
@@ -51,12 +53,24 @@ public class Resurrect implements CommandExecutor {
                 return true;
             }
 
+            if (plugin.getConfig().getBoolean("lifeRes") && plugin.getPlayerLives().get(((Player) sender).getUniqueId()) < 2){
+                sender.sendMessage("§cYou must have an extra life in order to resurrect someone");
+                hasLives.set(false);
+                return true;
+            }
+
             if (plugin.getPlayerLives().get(uuid) >= 1){
                 player.sendMessage("§cPlayer must be dead");
                 return true;
             }
+//TODO test
+            if (hasItems.get() && hasHealth.get() && hasLives.get()){
+                //removes a life from player casting
+                if (plugin.getConfig().getBoolean("lifeRes")) {
+                    UUID userUUID = ((Player) sender).getUniqueId();
+                    plugin.getPlayerLives().replace(userUUID,plugin.getPlayerLives().get(userUUID)-1);
+                }
 
-            if (hasItems.get() && hasHealth.get()){
                 Location location = player.getLocation();
 
                 double rotation = (player.getLocation().getYaw() - 90) % 360;

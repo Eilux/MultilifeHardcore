@@ -1,5 +1,5 @@
 # The number of lives given to a player upon joining the server for the first time, must be a positive whole number.
-lives: 3
+lives: 5
 
 # What happens when a player dies, values can be: "spectate", "ban", or "teleport"
 mode: "spectate"
@@ -22,18 +22,24 @@ oneLifePvP: false
 # If enabled, players are able to resurrect each other at the cost of some items and a permanent health reduction, those who are resurrected may also have a health reduction
 resurrection: true
 
+#resurection costs a life
+lifeRes: true
+
+#if enabled killing a player grants you a life
+lifeSteal: true
+
 # Only used if resurrection is enabled, lets you specify what items and how much of them resurrection costs, follows the format shown below of the item name (without the namespace) in all caps followed by a positive integer specifying the amount
 resItemCost:
-  - DIAMOND: 4
+#  - DIAMOND: 4
   #- EMERALD: 3
     # etc.
 
 # Only used if resurrection is enabled, lets you specify how much health resurrection costs values must be positive integers (values 20 or greater will result in the players death)
-resHealthCost: 2
+resHealthCost: 0
 
 # Only used if resurrection is enabled, lets you specify a minimum amount of health a resurrecting player must be left with after the fact, can be disabled by setting it to 0 or lower in which case a player can resurrect until it kills them
-resHealthMin: 6
+resHealthMin: 0
 
 # The max health of someone who is resurrected, must be a positive integer, should be less than 20 for balance
-resHealth: 10
+resHealth: 20
 

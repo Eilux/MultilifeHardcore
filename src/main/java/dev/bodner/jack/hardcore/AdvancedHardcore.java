@@ -239,10 +239,12 @@ public final class AdvancedHardcore extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event){
+        //decreases lives
         UUID id = event.getEntity().getUniqueId();
         if (playerLives.get(id) > 0){
             playerLives.replace(id, playerLives.get(id) - 1);
         }
+        //manages gameover
         if (deathMode.equals(DeathMode.BAN) && playerLives.get(id) <= 0){
             Bukkit.getBanList(BanList.Type.NAME).addBan(event.getEntity().getName(),"§fGame Over.",null,null);
             event.getEntity().spigot().respawn();
@@ -250,6 +252,12 @@ public final class AdvancedHardcore extends JavaPlugin implements Listener {
         }
         if (deathMode.equals(DeathMode.SPECTATE) && playerLives.get(id) <= 0){
             event.getEntity().setGameMode(GameMode.SPECTATOR);
+        }
+        //manages lifesteal
+        if (getConfig().getBoolean("lifeSteal")) {
+            if (event.getEntity().getKiller() != null){
+                playerLives.replace(event.getEntity().getKiller().getUniqueId(), playerLives.get(event.getEntity().getKiller().getUniqueId()) + 1);
+            }
         }
     }
 
